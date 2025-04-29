@@ -1,4 +1,6 @@
 import js from '@eslint/js'
+import storybook from '@storybook/eslint-plugin-storybook'
+import vitest from '@vitest/eslint-plugin'
 import eslintConfigPrettier from 'eslint-config-prettier'
 import prettierPlugin from 'eslint-plugin-prettier'
 import reactHooks from 'eslint-plugin-react-hooks'
@@ -13,20 +15,38 @@ export default tseslint.config(
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
-      globals: globals.browser,
+      globals: globals.browser
     },
     plugins: {
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
-      'prettier': prettierPlugin,
+      prettier: prettierPlugin
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
-    },
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }]
+    }
   },
-  eslintConfigPrettier,
+  {
+    files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
+    languageOptions: {
+      globals: globals.vitest
+    },
+    plugins: {
+      vitest: vitest
+    },
+    rules: {
+      ...vitest.configs.recommended.rules
+    }
+  },
+  {
+    files: ['**/*.stories.@(ts|tsx)'],
+    plugins: {
+      storybook: storybook
+    },
+    rules: {
+      ...storybook.configs.recommended.rules
+    }
+  },
+  eslintConfigPrettier
 )

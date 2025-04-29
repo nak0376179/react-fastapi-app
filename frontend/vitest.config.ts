@@ -1,5 +1,4 @@
-// vitest.config.ts
-import { defineConfig } from 'vitest/config'
+import { defineConfig } from 'vite'
 
 export default defineConfig({
   test: {

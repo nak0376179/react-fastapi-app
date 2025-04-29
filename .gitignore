@@ -38,3 +38,5 @@ site/
 *.njsproj
 *.sln
 *.sw?
+
+*storybook.log
