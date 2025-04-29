@@ -62,3 +62,4 @@ exclude = ["migrations/"]  # マイグレーションファイルは除外
 minversion = "7.0"
 addopts = "-ra -q"  # 失敗テストの詳細を出力、省略モード
 testpaths = ["tests"]  # テストディレクトリの指定
+asyncio_mode = "auto"

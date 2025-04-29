@@ -1,30 +1,25 @@
-import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
-import Link from '@mui/material/Link'
-import Typography from '@mui/material/Typography'
+import UserEditForm from '@/components/users/UserEditForm'
+import { useFetchUsersQuery } from '@/hooks/apis/users'
 
-function Copyright() {
+function App() {
+  const { data, isLoading, error } = useFetchUsersQuery()
+
+  if (isLoading) return <div>Loading...</div>
+  if (error) return <div>❌ Error: {(error as Error).message}</div>
+
   return (
-    <Typography variant="body2" align="center" sx={{ color: 'text.secondary' }}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        {' '}
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}.
-    </Typography>
+    <div>
+      <h1>Users</h1>
+      <ul>
+        {data.users.map((item: any) => (
+          <li key={item.id}>
+            {item.id} - {item.name}
+          </li>
+        ))}
+      </ul>
+      <UserEditForm id="user1" currentName="やまだたろう" currentEmail="taro@example.com" />
+    </div>
   )
 }
 
-export default function App() {
-  return (
-    <Container maxWidth="sm">
-      <Box sx={{ my: 4 }}>
-        <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
-          Material UI Vite.js example in TypeScript
-        </Typography>
-        <Copyright />
-      </Box>
-    </Container>
-  )
-}
+export default App

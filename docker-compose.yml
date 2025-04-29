@@ -14,7 +14,7 @@ services:
       - NODE_ENV=development # Node.jsを開発モードに設定
       - CHOKIDAR_USEPOLLING=true  # Docker内でファイル監視を強制的に有効化（ホットリロードのため）
     command: sh -c "npm ci || npm install && npm run dev -- --host"
-    platform: linux/amd64 # amd64アーキテクチャを指定（Apple Silicon対策など）
+    platform: linux/amd64
     depends_on:
       - backend
     networks:
@@ -26,13 +26,29 @@ services:
       - "8000:8000"     # FastAPIサーバーポート
     volumes:
       - ./backend:/app  # ソースコードをマウントして即時反映
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"] # FastAPI起動コマンド
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
     platform: linux/amd64
     environment:
       - PYTHONUNBUFFERED=1  # ログ即出力設定（バッファリング無効化）
+    depends_on:
+      - dynamodb
     networks:
       - app-network
 
+  dynamodb:
+    image: amazon/dynamodb-local
+    container_name: dynamodb-local
+    ports:
+      - "8001:8000"  # DynamoDB ローカルにアクセス（必要ならホスト側を変更可）
+    networks:
+      - app-network
+    command: "-jar DynamoDBLocal.jar -inMemory -sharedDb"  # メモリ上で動作（再起動でデータ消去）
+    volumes:
+      - dynamodb-data:/home/dynamodblocal/data  # 永続化したい場合に使用（オプション）
+
 networks:
   app-network:
-    driver: bridge  # 全サービス共通ネットワーク
+    driver: bridge
+
+volumes:
+  dynamodb-data:

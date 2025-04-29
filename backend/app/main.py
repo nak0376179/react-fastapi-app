@@ -1,7 +1,17 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .api import root, users
+from .api import items, root, users
+from .db.ensure_table_exists import ensure_table_exists
+
+
+async def lifespan(app: FastAPI):
+    print("startup event")
+    ensure_table_exists("user")
+    ensure_table_exists("items")
+    yield
+    print("shutdown event")
+
 
 app = FastAPI(
     title="PDFアプリケーション",
@@ -17,6 +27,7 @@ app = FastAPI(
         },
     ],
     # dependencies=[Depends(verify_token)]
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -27,6 +38,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # ルートをモジュールからインクルード
 app.include_router(root.router)
 app.include_router(users.router)
+app.include_router(items.router)
