@@ -1,30 +1,64 @@
-
+# --------------------
+# Ruff 設定
+# --------------------
 [tool.ruff]
-line-length = 160
+line-length = 160  # 1行あたりの最大文字数
+target-version = "py311"  # Python のバージョン（適切な警告を出すため）
 
 [tool.ruff.lint]
-
+# 有効にするルールセット
 select = [
-    "E",  # pycodestyle errors
-    "W",  # pycodestyle warnings
+    "E",  # pycodestyle エラー
+    "W",  # pycodestyle 警告
     "F",  # pyflakes
-    "I",  # isort
-    "B",  # flake8-bugbear
-    "C4",  # flake8-comprehensions
-    "UP",  # pyupgrade
+    "I",  # isort（インポート順）
+    "B",  # flake8-bugbear（バグを防ぐ）
+    "C4", # flake8-comprehensions（リスト内包などの改善）
+    "UP", # pyupgrade（古い構文の更新提案）
 ]
 
+# 無視するルール
 ignore = [
-    "E501",  # line too long, handled by black
-    "B008",  # do not perform function calls in argument defaults
-    "C901",  # too complex
-    "W191",  # indentation contains tabs
-    "B904", # raise ... from ... になっていない場合のエラーを無視
+    "E501",   # 行が長すぎる（Blackに任せる）
+    "B008",   # 関数引数のデフォルトで関数を使うな
+    "C901",   # 関数が複雑すぎる（必要に応じて）
+    "W191",   # タブインデント（他でチェックするなら不要）
+    "B904",   # raise ... from ... を強制しない
 ]
 
+# ファイルごとの無視設定
 [tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["F401"]
+"__init__.py" = ["F401"]  # 未使用importは __init__.py では許容
 
-# isort
+# isort 設定（Ruff内に統合）
 [tool.ruff.lint.isort]
-known-third-party = ["fastapi", "pydantic", "starlette"]
+known-third-party = ["fastapi", "pydantic", "starlette"]  # サードパーティモジュールの分類
+combine-as-imports = true  # `import a as b, c as d` 形式に統合
+
+# --------------------
+# Black（コード整形ツール）設定
+# --------------------
+[tool.black]
+line-length = 160
+target-version = ['py311']
+skip-string-normalization = false  # 文字列のクォート統一を有効化（デフォルト）
+
+# --------------------
+# mypy（型チェック）設定
+# --------------------
+[tool.mypy]
+python_version = "3.11"
+strict = true  # 厳格な型チェックを有効化
+ignore_missing_imports = true  # 外部ライブラリの型情報がなくても無視
+allow_redefinition = true  # 変数の再定義を許容
+show_error_codes = true  # エラーコードを表示
+pretty = true  # 読みやすくフォーマットされた出力
+exclude = ["migrations/"]  # マイグレーションファイルは除外
+
+# --------------------
+# pytest 設定（テストフレームワーク）
+# --------------------
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q"  # 失敗テストの詳細を出力、省略モード
+testpaths = ["tests"]  # テストディレクトリの指定
