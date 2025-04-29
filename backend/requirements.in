@@ -1,2 +1,6 @@
 fastapi
 uvicorn[standard]
+pytest
+pytest-asyncio  # 非同期テスト（FastAPI におすすめ）
+httpx
+pip-tools
