@@ -1,0 +1,40 @@
+.env
+*.env
+
+# --- logsなど ---
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# --- Node.jsビルド成果物 ---
+node_modules
+dist
+dist-ssr
+*.local
+
+# --- Python仮想環境 ---
+.venv/
+
+# --- Pythonキャッシュ ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# --- MkDocsビルド成果物（ドキュメント生成物） ---
+site/
+
+# --- エディタ設定など ---
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
