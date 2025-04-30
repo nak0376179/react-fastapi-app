@@ -2,12 +2,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from './axios'
 
 const fetchUsers = async () => {
-  const response = await axios.get('/users/')
+  const response = await axios.get('/users')
   return response.data
 }
 
 const createUser = async (user: { id: string; name: string; email: string }) => {
-  const response = await axios.post('/users/', user)
+  const response = await axios.post('/users', user)
   return response.data
 }
 

@@ -1,8 +1,7 @@
 # アプリケーション本体
 fastapi
 uvicorn[standard]
-
-# AWS SDK
+mangum
 boto3
 
 # テスト関連
@@ -12,3 +11,4 @@ httpx           # テストクライアントとして使用（非同期対応�
 
 # ツール系
 pip-tools       # requirements.txt のロックファイル生成用（pip-compile）
+python-dotenv

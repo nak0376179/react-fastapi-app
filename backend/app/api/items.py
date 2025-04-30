@@ -22,7 +22,7 @@ class User(BaseModel):
     email: str
 
 
-@router.get("/items")
+@router.get("/items", tags=["items"])
 def get_items():
     response = table.scan()
     return response["Items"]

@@ -1,0 +1,50 @@
+version = 0.1
+
+# === 共通設定 ===
+[global.parameters]
+stack_name = "sam-app"
+
+[build.parameters]
+cached = true
+parallel = true
+
+[validate.parameters]
+lint = true
+
+[package.parameters]
+resolve_s3 = true
+
+[sync.parameters]
+watch = true
+
+[local_start_api.parameters]
+warm_containers = "EAGER"
+
+[local_start_lambda.parameters]
+warm_containers = "EAGER"
+
+# === 開発環境 ===
+# sam deploy --config-env develop
+[develop.deploy.parameters]
+stack_name = "react-fastapi-app-dev"
+region = "ap-northeast-1"
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = false
+resolve_s3 = true
+s3_prefix = "react-fastapi-app/dev"
+parameter_overrides = "Environment=develop ExistingUserPoolId=ap-northeast-1_mEDAZ9b89 ExistingUserPoolClientId=6ccgqbuq83h89sv49vd8m0krod"
+
+# === 本番環境 ===
+# sam deploy --config-env prod
+[prod.deploy.parameters]
+stack_name = "react-fastapi-app-prod"
+region = "ap-northeast-1"
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = true
+resolve_s3 = true
+s3_prefix = "react-fastapi-app/prod"
+parameter_overrides = "Environment=prod ExistingUserPoolId=ap-northeast-1_PRODPOOLID ExistingUserPoolClientId=PRODCLIENTID"
+
+# 削除
+# sam delete --stack-name react-fastapi-app-dev --region ap-northeast-1
+# sam delete --stack-name react-fastapi-app-prod --region ap-northeast-1

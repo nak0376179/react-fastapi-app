@@ -12,8 +12,6 @@ lerna-debug.log*
 # --- Node.jsビルド成果物 ---
 node_modules
 dist
-dist-ssr
-*.local
 
 # --- Python仮想環境 ---
 .venv/
@@ -42,3 +40,4 @@ site/
 *storybook.log
 
 
+.aws-sam/

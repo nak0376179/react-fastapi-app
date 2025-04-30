@@ -1,0 +1,128 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: FastAPI app on AWS Lambda using SAM
+
+Globals:
+  Function:
+    Timeout: 30
+    Runtime: python3.12
+    Architectures:
+      - x86_64
+  # StageというStageが余計につくられてしまう問題を回避
+  Api:
+    OpenApiVersion: 3.0.2
+
+Parameters:
+  Environment:
+    Type: String
+    Default: develop
+    AllowedValues:
+      - prod
+      - develop
+      - local
+  ExistingUserPoolId:
+    Type: String
+    Description: "既存の CognitoUserPoolID"
+  ExistingUserPoolClientId:
+    Type: String
+    Description: "既存の CognitoUserPoolClientID"
+
+Resources:
+  FastApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: FastApi
+      StageName: v1
+      Auth:
+        DefaultAuthorizer: FastApiAuthorizer
+        AddDefaultAuthorizerToCorsPreflight: false
+        Authorizers:
+          FastApiAuthorizer:
+            Type: CognitoUserPool
+            UserPoolArn: !Sub arn:aws:cognito-idp:ap-northeast-1:893015465053:userpool/${ExistingUserPoolId}
+            Identity:
+              Header: Authorization
+
+  ### 🔓 Public (認証不要)
+  FastApiPublicFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/lambda/FastApiPublicFunction
+      RetentionInDays: 14
+
+  FastApiPublicFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: backend/
+      Handler: lambda_handler.handler
+      Environment:
+        Variables:
+          ENVIRONMENT: !Ref Environment
+      Events:
+        ### /
+        PublicRoot:
+          Type: Api
+          Properties:
+            Path: /
+            Method: GET
+            RestApiId: !Ref FastApi
+            Auth:
+              Authorizer: NONE
+    DependsOn: FastApiPublicFunctionLogGroup
+
+  ### 🔐 Protected (認証あり)
+  FastApiSecureFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/lambda/SecureFunction
+      RetentionInDays: 14
+
+  FastApiSecureFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: backend/
+      Handler: lambda_handler.handler
+      Environment:
+        Variables:
+          ENVIRONMENT: !Ref Environment
+      Events:
+        ### /users
+        ProtectedUsers:
+          Type: Api
+          Properties:
+            Path: /users
+            Method: ANY
+            RestApiId: !Ref FastApi
+        ProtectedUsersOptions:
+          Type: Api
+          Properties:
+            Path: /users
+            Method: OPTIONS
+            RestApiId: !Ref FastApi
+            Auth:
+              Authorizer: NONE
+        ### /items
+        ProtectedItems:
+          Type: Api
+          Properties:
+            Path: /items
+            Method: ANY
+            RestApiId: !Ref FastApi
+        ProtectedItemsOptions:
+          Type: Api
+          Properties:
+            Path: /items
+            Method: OPTIONS
+            RestApiId: !Ref FastApi
+            Auth:
+              Authorizer: NONE
+Outputs:
+  ApiUrl:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${FastApi}.execute-api.${AWS::Region}.amazonaws.com/v1"
+  FastApiSecureFunction:
+    Description: "FastAPI Lambda Function ARN"
+    Value: !GetAtt FastApiSecureFunction.Arn
+  FastApiSecureFunctionIamRole:
+    Description: "IAM Role ARN for FastApiSecureFunction"
+    Value: !GetAtt FastApiSecureFunctionRole.Arn
